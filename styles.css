@@ -1,0 +1,22 @@
+body {
+    text-align: center;
+    background-color: #f0f8ff;
+}
+
+#gameArea {
+    position: relative;
+    width: 500px; /* Smaller playable area */
+    height: 500px; /* Smaller playable area */
+    overflow: hidden;
+    margin: 0 auto; /* Center the game area */
+    border: 2px solid #000; /* Optional: For visual boundary */
+}
+
+.balloon {
+    position: absolute;
+    width: 50px;
+    height: auto;
+    cursor: pointer;
+    display: none; /* Hidden initially until reset */
+    z-index: 10; /* Make sure balloons are on top */
+}

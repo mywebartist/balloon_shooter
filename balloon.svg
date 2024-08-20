@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200">
+    <!-- Balloon body -->
+    <ellipse id="balloon-body" cx="50" cy="100" rx="40" ry="60" fill="red" />
+    <!-- Balloon string -->
+    <line x1="50" y1="160" x2="50" y2="200" stroke="gray" stroke-width="2"/>
+</svg>
