@@ -1,13 +1,17 @@
-// Get the score and missed elements
+// Get the score, missed, game over message, and reset button elements
 const scoreDisplay = document.getElementById('score');
 const missedDisplay = document.getElementById('missed');
+const gameOverMessage = document.getElementById('gameOverMessage');
+const resetButton = document.getElementById('resetButton');
 
 // Get all balloon elements
 const balloons = document.querySelectorAll('.balloon');
 
-// Initialize counters
+// Initialize counters and state variables
 let score = 0;
 let missed = 0;
+let gameOver = false;
+let balloonIntervals = [];
 
 // Define an array of 5 different colors
 const balloonColors = ['#FF6347', '#FFD700', '#32CD32', '#1E90FF', '#FF69B4'];
@@ -31,13 +35,20 @@ function resetBalloon(balloon) {
 
 // Function to move balloons
 function moveBalloon(balloon, speed) {
+    if (gameOver) return; // Stop moving if the game is over
+
     const balloonTop = parseFloat(balloon.style.top);
 
     // If the balloon moves off the top of the screen, count it as missed and reset
     if (balloonTop < -50) {
         missed += 1; // Increase the missed counter
         missedDisplay.textContent = missed;
-        resetBalloon(balloon);
+
+        if (missed >= 10) {
+            endGame(); // End the game if 10 balloons are missed
+        } else {
+            resetBalloon(balloon);
+        }
     } else {
         balloon.style.top = (balloonTop - speed) + 'px'; // Move the balloon upwards
     }
@@ -46,6 +57,8 @@ function moveBalloon(balloon, speed) {
 // Function to handle shooting a balloon
 balloons.forEach((balloon) => {
     balloon.addEventListener('click', function (event) {
+        if (gameOver) return; // Don't allow shooting if the game is over
+
         event.stopPropagation(); // Prevent missed shot when clicking on balloon
         score += 1;
         scoreDisplay.textContent = score;
@@ -53,9 +66,40 @@ balloons.forEach((balloon) => {
     });
 });
 
-// Set intervals for each balloon to move at different speeds
-balloons.forEach((balloon) => {
-    resetBalloon(balloon); // Initial balloon reset
-    const speed = Math.random() * 10 + 2; // Different speed for each balloon
-    setInterval(() => moveBalloon(balloon, speed), 30);
-});
+// Function to start the balloon movement and set their intervals
+function startBalloonMovement() {
+    balloons.forEach((balloon) => {
+        resetBalloon(balloon); // Initial balloon reset
+        const speed = Math.random() * 2 + 2; // Different speed for each balloon
+        const intervalId = setInterval(() => moveBalloon(balloon, speed), 30);
+        balloonIntervals.push(intervalId); // Store the interval for later clearing
+    });
+}
+
+// Function to end the game
+function endGame() {
+    gameOver = true;
+    gameOverMessage.style.display = 'block'; // Show the Game Over message
+    resetButton.style.display = 'block'; // Show the Reset button
+    // Stop all balloon movement
+    balloonIntervals.forEach(intervalId => clearInterval(intervalId));
+}
+
+// Function to reset the game
+function resetGame() {
+    gameOver = false;
+    score = 0;
+    missed = 0;
+    scoreDisplay.textContent = score;
+    missedDisplay.textContent = missed;
+    gameOverMessage.style.display = 'none'; // Hide the Game Over message
+    resetButton.style.display = 'none'; // Hide the Reset button
+    balloonIntervals = []; // Clear balloon intervals array
+    startBalloonMovement(); // Restart the balloon movement
+}
+
+// Attach reset button click event
+resetButton.addEventListener('click', resetGame);
+
+// Start the game
+startBalloonMovement();
